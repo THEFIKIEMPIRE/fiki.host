@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIKI.host | Stress-Free Launch</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+        .container { max-width: 600px; width: 100%; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        textarea { width: 100%; height: 200px; background: #0f172a; color: #10b981; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-family: monospace; margin: 10px 0; }
+        button { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        button:hover { background: #2563eb; }
+        #status { margin-top: 15px; color: #94a3b8; font-size: 0.9rem; }
+        a { color: #3b82f6; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 FIKI.host</h1>
+    <p>The "Front Door" for your digital empire.</p>
+
+    <div class="container">
+        <h3>Paste & Go</h3>
+        <p style="font-size: 0.8rem; color: #94a3b8;">Paste your HTML below to launch instantly.</p>
+        <textarea id="userCode" placeholder="<html><body><h1>Hello World</h1></body></html>"></textarea>
+        <button onclick="launchSite()">Launch Project</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        async function launchSite() {
+            const code = document.getElementById('userCode').value;
+            const status = document.getElementById('status');
+            
+            if (!code) {
+                status.innerText = "❌ Please paste some code first!";
+                return;
+            }
+
+            status.innerText = "⏳ Deploying to the Fiki Empire...";
+
+            try {
+                // In a real Boss-Tier setup, you'd send this to your backend (Vercel Serverless Function)
+                // For now, this is the logic flow for your engine:
+                console.log("Preparing deployment for code:", code);
+                
+                // Placeholder for the Vercel API call
+                status.innerHTML = `✅ Deployment Sent! <br> (Note: Connect your VERCEL_TOKEN in Settings to go live)`;
+            } catch (err) {
+                status.innerText = "❌ Deployment failed. Check your connection.";
+            }
+        }
+    </script>
+</body>
+</html>
