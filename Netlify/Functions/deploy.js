@@ -3,19 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIKI.host</title>
+    <title>FIKI.host | Digital Empire</title>
     <style>
-        body { background: #0b0e14; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }
-        .card { background: #1a1f29; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid #2d333f; }
-        textarea { width: 100%; height: 180px; background: #0b0e14; border: 1px solid #2d333f; color: #10b981; border-radius: 8px; padding: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; margin-top: 15px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        #status { margin-top: 20px; display: none; text-align: center; }
+        body { 
+            background: #0b0e14; 
+            color: white; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+        .card { 
+            background: #1a1f29; 
+            padding: 30px; 
+            border-radius: 15px; 
+            width: 95%; 
+            max-width: 500px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            border: 1px solid #2d333f; 
+            margin-top: 50px; 
+        }
+        h1 { text-align: center; color: #fff; margin-bottom: 5px; font-size: 2rem; }
+        textarea { 
+            width: 100%; 
+            height: 200px; 
+            background: #0b0e14; 
+            border: 1px solid #2d333f; 
+            color: #10b981; 
+            border-radius: 10px; 
+            padding: 15px; 
+            box-sizing: border-box; 
+            font-family: monospace; 
+            font-size: 14px; 
+            outline: none; 
+            resize: none;
+        }
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 15px; 
+            background: #3b82f6; 
+            border: none; 
+            border-radius: 10px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px; 
+        }
+        button:active { background: #2563eb; }
+        #status { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-radius: 10px; 
+            display: none; 
+            text-align: center; 
+            background: #1e293b; 
+            border: 1px solid #3b82f6; 
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
     <h1>🚀 FIKI.host</h1>
+    <p style="color: #8892b0; margin: 0;">The Front Door for your digital empire.</p>
+
     <div class="card">
-        <textarea id="htmlInput" placeholder="Paste your HTML here..."></textarea>
+        <h3 style="margin-top: 0; color: #fff;">Paste & Go</h3>
+        <textarea id="htmlInput" placeholder="Paste your HTML code here..."></textarea>
         <button onclick="deployProject()">Launch Project</button>
         <div id="status"></div>
     </div>
@@ -24,23 +81,33 @@
         async function deployProject() {
             const htmlCode = document.getElementById('htmlInput').value;
             const status = document.getElementById('status');
-            status.innerHTML = "Working...";
+            
+            if (!htmlCode) {
+                alert("Please paste some code first!");
+                return;
+            }
+
+            status.innerHTML = "🚀 Launching to the FIKI Empire...";
             status.style.display = "block";
 
             try {
-                // This talks to your folder path exactly as it appears in your screenshot
+                // This connects to the deploy.js file you put in netlify/functions/
                 const response = await fetch('/.netlify/functions/deploy', {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ htmlCode })
                 });
+
                 const data = await response.json();
+
                 if (data.url) {
-                    status.innerHTML = `✅ <a href="${data.url}" target="_blank" style="color: #10b981;">CLICK TO VIEW SITE</a>`;
+                    status.innerHTML = `✅ Project Live! <br><br><a href="${data.url}" target="_blank" style="color: #10b981; font-weight: bold; text-decoration: none; border: 1px solid #10b981; padding: 8px 15px; border-radius: 5px; display: inline-block; margin-top: 10px;">VIEW YOUR SITE</a>`;
                 } else {
-                    status.innerHTML = "❌ Setup error. Check Netlify variables.";
+                    status.innerHTML = "❌ Launch failed. Verify your Netlify Token and Site ID.";
                 }
-            } catch (e) {
-                status.innerHTML = "❌ Connection error.";
+            } catch (error) {
+                console.error('Error:', error);
+                status.innerHTML = "❌ Connection error. Checking engine...";
             }
         }
     </script>
