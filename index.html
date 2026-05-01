@@ -1,59 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIKI.host | Launch Your Empire</title>
-    <style>
-        body { background: #0a0a0b; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .card { background: #1c1c1e; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; }
-        h1 { margin-bottom: 10px; letter-spacing: 2px; }
-        textarea { width: 100%; height: 200px; background: #000; color: #10b981; border: 1px solid #444; border-radius: 10px; padding: 10px; box-sizing: border-box; font-family: monospace; margin-bottom: 20px; }
-        button { background: #3b82f6; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
-        button:hover { background: #2563eb; }
-        #status { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; background: #2c2c2e; font-size: 0.9rem; }
-    </style>
-</head>
-<body>
+async function deployProject() {
+    const htmlCode = document.getElementById('htmlInput').value;
+    const status = document.getElementById('status');
+    
+    status.innerHTML = "🚀 Launching to the FIKI Empire...";
+    status.style.display = "block";
 
-    <div class="card">
-        <h1>🚀 FIKI.host</h1>
-        <p style="color: #888;">Paste your HTML to launch instantly.</p>
-        
-        <textarea id="htmlInput" placeholder="<html><body><h1>My Empire</h1></body></html>"></textarea>
-        
-        <button onclick="deployProject()">Launch Project</button>
-        
-        <div id="status"></div>
-    </div>
+    try {
+        // This is the important change: it now talks to Netlify
+        const response = await fetch('/.netlify/functions/deploy', {
+            method: 'POST',
+            body: JSON.stringify({ htmlCode })
+        });
 
-    <script>
-        async function deployProject() {
-            const htmlCode = document.getElementById('htmlInput').value;
-            const status = document.getElementById('status');
-            
-            status.innerHTML = "🚀 Launching to the FIKI Empire...";
-            status.style.display = "block";
+        const data = await response.json();
 
-            try {
-                const response = await fetch('/.netlify/functions/deploy', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ htmlCode })
-                });
-
-                const data = await response.json();
-
-                if (data.url) {
-                    status.innerHTML = `✅ Project Live! <br><br><a href="${data.url}" target="_blank" style="color: #10b981; text-decoration: none; font-weight: bold;">VIEW YOUR SITE</a>`;
-                } else {
-                    status.innerHTML = "❌ Launch failed. Check Netlify Environment Variables.";
-                }
-            } catch (error) {
-                status.innerHTML = "❌ Connection error. Is the function deployed?";
-                console.error(error);
-            }
+        if (data.url) {
+            status.innerHTML = `✅ Project Live! <br><a href="${data.url}" target="_blank" style="color: #10b981;">Click here to view</a>`;
+        } else {
+            status.innerHTML = "❌ Launch failed. Check your Netlify Variables.";
         }
-    </script>
-</body>
-</html>
+    } catch (error) {
+        status.innerHTML = "❌ Connection error.";
+    }
+}
