@@ -1,36 +1,48 @@
-const fetch = require('node-fetch');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIKI.host</title>
+    <style>
+        body { background: #0b0e14; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .card { background: #1a1f29; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid #2d333f; }
+        textarea { width: 100%; height: 180px; background: #0b0e14; border: 1px solid #2d333f; color: #10b981; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; margin-top: 15px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        #status { margin-top: 20px; display: none; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>🚀 FIKI.host</h1>
+    <div class="card">
+        <textarea id="htmlInput" placeholder="Paste your HTML here..."></textarea>
+        <button onclick="deployProject()">Launch Project</button>
+        <div id="status"></div>
+    </div>
 
-exports.handler = async (event) => {
-  // Only allow POST requests
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+    <script>
+        async function deployProject() {
+            const htmlCode = document.getElementById('htmlInput').value;
+            const status = document.getElementById('status');
+            status.innerHTML = "Working...";
+            status.style.display = "block";
 
-  try {
-    const { htmlCode } = JSON.parse(event.body);
-
-    // Send the user's code to Netlify to create a new site
-    const response = await fetch(`https://api.netlify.com/api/v1/sites/${process.env.NETLIFY_SITE_ID}/deploys`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.NETLIFY_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        files: {
-          "index.html": Buffer.from(htmlCode).toString('base64')
+            try {
+                // This talks to your folder path exactly as it appears in your screenshot
+                const response = await fetch('/.netlify/functions/deploy', {
+                    method: 'POST',
+                    body: JSON.stringify({ htmlCode })
+                });
+                const data = await response.json();
+                if (data.url) {
+                    status.innerHTML = `✅ <a href="${data.url}" target="_blank" style="color: #10b981;">CLICK TO VIEW SITE</a>`;
+                } else {
+                    status.innerHTML = "❌ Setup error. Check Netlify variables.";
+                }
+            } catch (e) {
+                status.innerHTML = "❌ Connection error.";
+            }
         }
-      })
-    });
-
-    const data = await response.json();
-
-    // Send the new URL back to your dashboard
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ url: `https://${data.name}.netlify.app` })
-    };
-  } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-  }
-};
+    </script>
+</body>
+</html>
