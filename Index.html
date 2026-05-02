@@ -1,0 +1,32 @@
+    <script>
+        async function deployProject() {
+            const htmlCode = document.getElementById('htmlInput').value;
+            const status = document.getElementById('status');
+            
+            if (!htmlCode) {
+                alert("Please paste some code first!");
+                return;
+            }
+
+            status.innerHTML = "🚀 Deploying to the Empire...";
+            status.style.display = "block";
+
+            try {
+                const response = await fetch('/.netlify/functions/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ htmlCode: htmlCode }) 
+                });
+
+                const data = await response.json();
+
+                if (data.url) {
+                    status.innerHTML = `✅ Live! <br><br><a href="${data.url}" target="_blank" style="color: #10b981; font-weight: bold; text-decoration: none; border: 1px solid #10b981; padding: 5px 10px; border-radius: 5px;">VIEW SITE</a>`;
+                } else {
+                    status.innerHTML = "❌ Launch failed. Check Netlify Logs.";
+                }
+            } catch (error) {
+                status.innerHTML = "❌ Connection Error. Refresh and try again.";
+            }
+        }
+    </script>
